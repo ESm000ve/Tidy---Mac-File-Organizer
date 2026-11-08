@@ -12,6 +12,10 @@ I designed and built Tidy for people who repeatedly sort downloads, scans, and p
 
 I put source and destination first because those two choices determine where Tidy looks and where files land. Subfolder scanning is opt-in. People can narrow the scope with file types and date or size filters. Finder Tags mode supports people who want to categorize files while keeping their existing folder structure.
 
+Smart Rename exposes the naming format and analysis provider separately. Here, Date first shows the filename pattern before the user previews any changes.
+
+![Smart Rename with Date first selected and the analysis provider shown below](screenshots/naming-style.png)
+
 ## Show the consequences before moving files
 
 The manual workflow separates configuration, preview, and confirmation. The preview pairs each file with its proposed destination and match reason. Quick Look helps identify files with generic names. The preview shows up to 50 matches, while confirmation processes the full matching set. Undo covers the latest recorded run.
@@ -24,9 +28,17 @@ I separated reviewing a suggested rule from confirming the resulting file moves.
 
 Gemini is optional and uses a key the user supplies. File-type rules and Undo work locally. Apple Vision gives users a separate on-device option for supported document and image analysis.
 
-![AI rule review showing the interpreted file types, date filter, and conflict policy](screenshots/rule-review.png)
+When a prompt like “Organize old files” leaves the date range open, Tidy asks for a cutoff before drafting the rule.
 
-The screenshots use synthetic files and redacted paths. The AI rule review uses a simulated response.
+![Clarification dialog asking which date range should count as old](screenshots/rule-clarification.png)
+
+## Set rules for unattended runs
+
+Scheduling puts run frequency, folder watching, and conflict handling in one place. The conflict policy gives users a way to decide what happens when two files have the same name before the app runs on its own.
+
+![Schedule and conflicts settings showing a daily schedule, folder watching, and the Keep both policy](screenshots/schedule.png)
+
+All five screenshots show the app in dark mode. The file preview uses synthetic files and redacted paths. The clarification uses a simulated AI response.
 
 ## Verify behavior where mistakes matter
 

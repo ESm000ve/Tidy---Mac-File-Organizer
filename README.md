@@ -17,13 +17,13 @@ Tidy is a desktop file organizer for people who repeatedly sort downloads, scans
 | Put AI suggestions under user control | A natural-language prompt produces a rule draft. Users can review the interpreted categories, folders, and filters before applying it. Manual runs then have a separate file preview. |
 | Make the privacy choice visible | Users can organize by file type, analyze supported files on-device with Apple Vision, or opt into Gemini with their own key. |
 
-### File preview and AI rule review
+### File preview and AI clarification
 
 ![Dark-mode preview listing three sample moves and a Confirm and Run button](docs/screenshots/preview.png)
 
-![Rule review showing the interpreted file type, date range, naming rules, and conflict policy](docs/screenshots/rule-review.png)
+![Dark-mode clarification dialog asking for a date range before drafting an AI rule](docs/screenshots/rule-clarification.png)
 
-The screenshots use test data. Local paths are redacted, and the AI rule review shows a simulated response.
+The screenshots use test data. The preview uses redacted paths, and the clarification uses a simulated AI response. The [case study](docs/case-study.md) also shows Smart Rename and scheduling.
 
 ## Get started
 
