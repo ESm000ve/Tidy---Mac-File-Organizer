@@ -1,0 +1,288 @@
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * Accessibility Profiles — CSS Layer
+ *
+ * Each .a11y-* class is added to <html> by AccessibilityProvider.
+ * All changes are additive — zero impact when no profiles are active.
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── LOW VISION ────────────────────────────────────────────────────────────── */
+.a11y-low-vision {
+    --font-size: 18px;
+}
+
+/* Thicker borders */
+.a11y-low-vision *[class*="border"] {
+    border-width: 1.5px !important;
+}
+
+/* Increased contrast on muted text */
+.a11y-low-vision {
+    --muted-foreground: #555560;
+}
+
+.a11y-low-vision:is(.dark) {
+    --muted-foreground: #b0b0b8;
+}
+
+/* Enlarge icons */
+.a11y-low-vision svg {
+    transform: scale(1.2);
+}
+
+/* Larger toggle targets */
+.a11y-low-vision [data-slot="switch"] {
+    min-width: 48px;
+    min-height: 28px;
+}
+
+/* ── COLOR VISION — Deuteranopia (Red-Green, most common) ──────────────────── */
+/* Remap reds → blue, greens → orange for max separation */
+.a11y-color-vision-deuteranopia {
+    /* Status: success → blue instead of green */
+    --color-success: #0A84FF;
+    --color-success-foreground: #58ADFF;
+    /* Status: error → orange instead of red */
+    --color-error: #FF9500;
+    --color-error-foreground: #FFB340;
+}
+
+/* Override specific color classes */
+.a11y-color-vision-deuteranopia .bg-emerald-500\/20,
+.a11y-color-vision-deuteranopia .bg-emerald-500\/15 {
+    background-color: rgba(10, 132, 255, 0.15) !important;
+}
+
+.a11y-color-vision-deuteranopia .text-emerald-400,
+.a11y-color-vision-deuteranopia .text-emerald-700 {
+    color: #58ADFF !important;
+}
+
+
+/* ── COLOR VISION — Protanopia (Red-Green, reduced red) ────────────────────── */
+.a11y-color-vision-protanopia {
+    --color-success: #0A84FF;
+    --color-success-foreground: #58ADFF;
+    --color-error: #FFD60A;
+    --color-error-foreground: #FFE066;
+}
+
+.a11y-color-vision-protanopia .bg-emerald-500\/20,
+.a11y-color-vision-protanopia .bg-emerald-500\/15 {
+    background-color: rgba(10, 132, 255, 0.15) !important;
+}
+
+.a11y-color-vision-protanopia .text-emerald-400,
+.a11y-color-vision-protanopia .text-emerald-700 {
+    color: #58ADFF !important;
+}
+
+
+/* ── COLOR VISION — Tritanopia (Blue-Yellow) ───────────────────────────────── */
+.a11y-color-vision-tritanopia {
+    --color-success: #FF375F;
+    --color-success-foreground: #FF6482;
+}
+
+.a11y-color-vision-tritanopia .text-\[\#0A84FF\],
+.a11y-color-vision-tritanopia .text-\[\#58ADFF\] {
+    color: #FF375F !important;
+}
+
+.a11y-color-vision-tritanopia .bg-\[\#0A84FF\]\/15 {
+    background-color: rgba(255, 55, 95, 0.15) !important;
+}
+
+
+/* ── MOTOR / DEXTERITY ─────────────────────────────────────────────────────── */
+/* Minimum 48px touch targets */
+.a11y-motor button,
+.a11y-motor [role="button"],
+.a11y-motor a,
+.a11y-motor select,
+.a11y-motor [data-slot="select-trigger"] {
+    min-height: 48px;
+    min-width: 48px;
+}
+
+/* Increased spacing */
+.a11y-motor .gap-1 {
+    gap: 0.5rem;
+}
+
+.a11y-motor .gap-1\.5 {
+    gap: 0.625rem;
+}
+
+.a11y-motor .gap-2 {
+    gap: 0.75rem;
+}
+
+.a11y-motor .gap-3 {
+    gap: 1rem;
+}
+
+.a11y-motor .gap-4 {
+    gap: 1.25rem;
+}
+
+/* Wider focus ring */
+.a11y-motor :focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+}
+
+/* ── REDUCED MOTION ────────────────────────────────────────────────────────── */
+.a11y-reduced-motion,
+.a11y-reduced-motion *,
+.a11y-reduced-motion *::before,
+.a11y-reduced-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ── COGNITIVE / FOCUS ─────────────────────────────────────────────────────── */
+
+.a11y-cognitive {
+    --font-ui: "Atkinson Hyperlegible", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-size: 17px;
+}
+
+/* More generous spacing */
+.a11y-cognitive main {
+    letter-spacing: 0.02em;
+    word-spacing: 0.05em;
+    line-height: 1.7;
+}
+
+/* Reduce visual noise — dim decorative elements */
+.a11y-cognitive [aria-hidden="true"] svg {
+    opacity: 0.5;
+}
+
+/* Wider paragraphs for easier reading */
+.a11y-cognitive p {
+    max-width: 65ch;
+}
+
+/* Clearer focus indicator */
+.a11y-cognitive :focus-visible {
+    outline: 3px solid #0A84FF !important;
+    outline-offset: 2px !important;
+}
+
+/* ── HIGH CONTRAST ──────────────────────────────────────────────────────────── */
+.a11y-high-contrast {
+    --border: rgba(0, 0, 0, 0.9);
+    --tidy-window-background: #f0f0f0;
+    --muted-foreground: #333333;
+}
+
+.a11y-high-contrast.dark {
+    --border: rgba(255, 255, 255, 0.9);
+    --tidy-window-background: #000000;
+    --muted-foreground: #cccccc;
+}
+
+/* Solid fills — strip glassmorphism */
+.a11y-high-contrast *[class*="backdrop-blur"],
+.a11y-high-contrast *[class*="bg-black/5"],
+.a11y-high-contrast *[class*="bg-white/[0.08]"] {
+    backdrop-filter: none !important;
+}
+
+/* Heavy borders everywhere */
+.a11y-high-contrast *[class*="border"],
+.a11y-high-contrast *[class*="border-black/10"],
+.a11y-high-contrast *[class*="border-white/10"] {
+    border-width: 2px !important;
+    border-color: currentColor !important;
+    opacity: 1 !important;
+}
+
+/* Bold text for labels */
+.a11y-high-contrast label,
+.a11y-high-contrast .text-muted-foreground {
+    font-weight: 600 !important;
+    opacity: 1 !important;
+}
+
+/* Very visible focus ring */
+.a11y-high-contrast :focus-visible {
+    outline: 3px solid #000000 !important;
+    outline-offset: 3px !important;
+}
+
+.a11y-high-contrast.dark :focus-visible {
+    outline: 3px solid #ffffff !important;
+    outline-offset: 3px !important;
+}
+
+/* Make disabled states clearly distinct */
+.a11y-high-contrast [disabled],
+.a11y-high-contrast [aria-disabled="true"] {
+    opacity: 0.4 !important;
+    text-decoration: line-through;
+}
+
+/* ── SCREEN READER ──────────────────────────────────────────────────────────── */
+/* Hides decorative shimmer, gradients, and visual-only badge elements
+   so VoiceOver doesn't read noise. Relies on aria-hidden already being set. */
+/* Decorative artwork already uses aria-hidden. Keep it visible for sighted
+   screen-reader users, including icons that identify toolbar buttons. */
+
+/* Remove pointer-events-none clipping that can hide content from SR */
+.a11y-screen-reader .pointer-events-none {
+    pointer-events: auto !important;
+}
+
+/* Increase opacity on all text — no washed-out labels */
+.a11y-screen-reader *[class*="opacity-"] {
+    opacity: 1 !important;
+}
+
+/* Make all truncated text fully readable (SR reads full text anyway) */
+.a11y-screen-reader .truncate {
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+}
+
+/* ── SKIP LINK ──────────────────────────────────────────────────────────────── */
+/* Visible only on focus — helps keyboard/screen reader users skip the toolbar */
+.skip-to-main {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    padding: 10px 20px;
+    background: var(--system-blue);
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: top 0.15s ease;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.skip-to-main:focus {
+    top: 12px;
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}

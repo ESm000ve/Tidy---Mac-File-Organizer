@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+dist-ssr
+dist-electron
+build
+
+# Vite
+*.local
+
+# Environment variables
+.env
+.env.*
+!.env.example
+gemini-key.bin
+gemini-key.bin.tmp
+*.p12
+*.pfx
+*.p8
+
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.sw?
+
+# Debug / dev artifacts
+build_output*.txt
+test-browser.mjs
+
+# App packages and local verification
+release/
+.test-artifacts/

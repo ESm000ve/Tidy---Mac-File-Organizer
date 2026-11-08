@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+  <title>Tidy Help</title>
+  <style>
+    :root { color-scheme: light dark; font: 15px/1.55 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+    body { margin: 0; background: Canvas; color: CanvasText; }
+    main { max-width: 720px; margin: auto; padding: clamp(20px, 5vw, 56px); }
+    h1 { font-size: 2.25rem; letter-spacing: -.035em; margin: 0; line-height: 1.15; }
+    h2 { font-size: 1.3rem; margin: 0 0 .65rem; }
+    h3 { font-size: 1rem; margin: 1.2rem 0 .3rem; }
+    p { margin: .5rem 0 1rem; }
+    nav, aside { border-radius: 14px; padding: 1rem 1.2rem; background: color-mix(in srgb, CanvasText 6%, Canvas); }
+    nav ul { margin: 0; padding-left: 1.1rem; }
+    li { margin: .3rem 0; }
+    a { color: LinkText; text-underline-offset: .18em; }
+    a:focus-visible { outline: 2px solid LinkText; outline-offset: 3px; border-radius: 3px; }
+    section { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid color-mix(in srgb, CanvasText 22%, Canvas); scroll-margin-top: 1rem; }
+    aside { margin-block: 1rem; }
+    dt { font-weight: 600; margin-top: 1rem; }
+    dd { margin: .25rem 0 0; }
+    footer { margin-top: 2rem; }
+  </style>
+</head>
+<body>
+<main id="top">
+  <header>
+    <h1>Tidy Help</h1>
+    <p>Organize a folder, review the proposed changes, and undo a run if you need to.</p>
+  </header>
+  <nav aria-label="Help topics">
+    <ul>
+      <li><a href="#first-run">Organize your first folder</a></li>
+      <li><a href="#choose-files">Choose which files Tidy includes</a></li>
+      <li><a href="#preview-undo">Review changes and undo a run</a></li>
+      <li><a href="#schedule">Schedule runs</a></li>
+      <li><a href="#gemini">Use Gemini features</a></li>
+      <li><a href="#troubleshooting">Troubleshoot</a></li>
+    </ul>
+  </nav>
+
+  <section id="first-run">
+    <h2>Organize your first folder</h2>
+    <ol>
+      <li>In Finder, create two temporary folders named <strong>Tidy Sample</strong> and <strong>Tidy Output</strong>. Put a few copied files in Tidy Sample.</li>
+      <li>In Tidy, click <strong>Browse…</strong> under <strong>Source</strong> and choose Tidy Sample. Under <strong>Destination</strong>, choose Tidy Output. You can also drag a folder onto either card.</li>
+      <li>Under <strong>Automated rules</strong>, enable the categories that match the file types you want to organize.</li>
+      <li>Click <strong>Run Tidy</strong> to see the proposed moves. Check the files and destination folders, then click <strong>Confirm &amp; Run</strong> if everything looks right.</li>
+    </ol>
+    <aside><strong>Run Tidy opens a preview. Confirm &amp; Run moves the files.</strong></aside>
+  </section>
+
+  <section id="choose-files">
+    <h2>Choose which files Tidy includes</h2>
+    <p>Tidy starts with files directly inside the source folder. Turn on <strong>Include subfolders</strong> to scan nested folders and choose which folders to include. Tidy leaves the original folders in place. Choose a destination different from the source when scanning subfolders.</p>
+    <p>Use the file-type choices to narrow the scan and <strong>Smart filters</strong> to limit files by date modified or size. Turn on <strong>Exclude hidden</strong> to skip names that begin with a dot. Files must match the selected scope, filters, and an enabled category.</p>
+    <p>Choose <strong>Older than…</strong> under <strong>Date modified</strong> to enter a cutoff in whole days. To find a file later, use <strong>Find organized files</strong> in the toolbar and describe it. Tidy searches filenames and text that Spotlight has indexed in the organized folder.</p>
+    <p>The <strong>Books</strong> rule includes EPUB, MOBI, Kindle formats such as AZW3, comic archives such as CBZ and CBR, and M4B audiobooks. PDF remains in <strong>Documents</strong>.</p>
+    <p>If you clear a folder or file-type selection, select the items you want before previewing again. An empty selection does not mean “include everything.”</p>
+  </section>
+
+  <section id="preview-undo">
+    <h2>Review changes and undo a run</h2>
+    <p>The preview shows which files match and where Tidy proposes moving them. Review suggested names and folders, especially when multiple files have the same name. If you need to change the source, filters, or rules, close the preview and run it again.</p>
+    <p>Focus a file row and press <kbd>Space</kbd>, or click its Quick Look button. Select <strong>Apply Finder tags in place</strong> to add category tags. In move mode, you can group files by download website or photos by capture year and month. Files without the selected metadata follow their category rules.</p>
+    <p>After a run, use <strong>Undo Changes</strong> to put files back. You can also choose <strong>Edit → Undo Last Organize</strong> when an undo is available. If a new file already occupies an original location, Tidy leaves it in place and reports the conflict.</p>
+    <p>With <strong>Move duplicates to Trash</strong> and duplicate detection enabled, identical copies go to the Trash. Use <strong>Put Back</strong> in Finder to restore them.</p>
+  </section>
+
+  <section id="schedule">
+    <h2>Schedule runs</h2>
+    <p>In <strong>Schedule and conflicts</strong>, choose Daily, Weekly, or Monthly and set a time. Weekly runs occur on Monday and monthly runs on the first day. Choose Manual to turn the schedule off.</p>
+    <p>Turn on <strong>Watch for new files</strong> to organize new arrivals while Tidy is running. Watching starts with a baseline of existing files and waits for new files to settle. The Tidy menu bar icon can reopen the window, enable <strong>Launch at Login</strong> in the installed app, or quit Tidy.</p>
+    <p>The installed macOS app can run your schedule while Tidy is closed and you are logged in. Allow background activity and notifications in System Settings. Use <strong>Undo</strong> in a scheduled-run notification or choose <strong>Edit → Undo Last Organize</strong> in Tidy. Tidy can stay in the menu bar after delivering a scheduled notification.</p>
+  </section>
+
+  <section id="gemini">
+    <h2>Use Gemini features</h2>
+    <ol>
+      <li>Open <strong>Settings</strong> from the Tidy menu or press <kbd>⌘,</kbd>.</li>
+      <li>Under <strong>Gemini API key</strong>, enter your key and click <strong>Save key</strong>.</li>
+      <li>Click <strong>Test connection</strong> to confirm Gemini accepts the key.</li>
+    </ol>
+    <dl>
+      <dt>Suggest rules for this folder</dt>
+      <dd>Shares a sample of filenames with Gemini and opens a review of the proposed categories. Applying the proposal updates your active rules.</dd>
+      <dt>AI rules</dt>
+      <dd>Describe what you want to organize in plain language. Tidy proposes settings for you to review. It may ask a follow-up question when a detail is missing.</dd>
+      <dt>Smart Rename</dt>
+      <dd>Suggests clearer filenames for generic names and keeps descriptive names as written. Choose a descriptive or date-first naming style and review suggestions in the preview. Accepted offline renames stay in their assigned category.</dd>
+      <dt>Smart Sort</dt>
+      <dd>Suggests more specific destination subfolders based on what the files contain. <strong>Smart Sort folders by year</strong> adds a year from a recognized document date, photo capture date, or the file’s modified date.</dd>
+    </dl>
+    <p>Gemini features use Google’s online service. Smart Rename and Smart Sort may send supported file contents. The connection test sends a short test message. Basic rules, previews, moves, and undo work without Gemini.</p>
+    <p>Choose <strong>On-device text recognition</strong> under <strong>Analyze files with</strong> to suggest names and folders from text in supported images and first pages of PDFs. Files and recognized text stay on this Mac in that mode.</p>
+  </section>
+
+  <section id="troubleshooting">
+    <h2>Troubleshoot</h2>
+    <h3>The preview is empty</h3>
+    <p>Check that the source contains matching files, the relevant category is enabled, and the file type is selected. For nested files, turn on <strong>Include subfolders</strong> and select their folders. Try relaxing the date or size filter.</p>
+    <h3>Tidy can’t read or write to a folder</h3>
+    <p>Check that the folder still exists and that its drive is connected. Choose the folder again with <strong>Browse…</strong>. If macOS denied access, review Tidy’s permissions under <strong>System Settings → Privacy &amp; Security → Files and Folders</strong>.</p>
+    <h3>Gemini won’t connect</h3>
+    <p>Open <strong>Settings</strong> and click <strong>Test connection</strong>. If authorization fails, check that the key is valid and has Gemini API access. If you hit a usage limit, check your Google API quota or try again later.</p>
+    <h3>You still need help</h3>
+    <p>Choose <strong>Help → Report an Issue</strong>. Include your Tidy version, the steps you took, and the error text. Leave out your API key and private file contents.</p>
+  </section>
+  <footer><a href="#top">Back to the top</a></footer>
+</main>
+</body>
+</html>

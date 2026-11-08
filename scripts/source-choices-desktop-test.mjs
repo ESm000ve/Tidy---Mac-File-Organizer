@@ -1,0 +1,101 @@
+import { createRequire } from 'node:module';
+import { _electron as electron } from '@playwright/test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+const root=await fs.mkdtemp(path.join(os.tmpdir(),'tidy-source-choices-'));
+const source=path.join(root,'Lessons'), dest=path.join(root,'Collected');
+for(const [file,content] of Object.entries({'root.pdf':'root','root.txt':'root text','Lesson A/worksheet.pdf':'a','Lesson A/notes.txt':'notes','Lesson A/Deep/deep.pdf':'deep','Lesson B/worksheet.pdf':'b'})) {
+ const target=path.join(source,file);await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,content);
+}
+const out=path.resolve('.test-artifacts/source-choices');await fs.mkdir(out,{recursive:true});
+const executablePath=process.env.TIDY_EXECUTABLE;
+const env={...process.env,GEMINI_API_KEY:''};delete env.ELECTRON_RUN_AS_NODE;
+const app=await electron.launch({executablePath,args:[...(executablePath?[]:['.']),'--user-data-dir='+path.join(root,'profile')],env,timeout:60000});
+try {
+ const page=await app.firstWindow(),errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.locator('#main-content').waitFor();await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
+ await page.evaluate(({source,dest})=>{localStorage.setItem('tidy_source_path',source);localStorage.setItem('tidy_dest_path',dest)},{source,dest});await page.reload();
+ await page.getByRole('switch',{name:'Include subfolders',exact:true}).check();
+ const folders=page.getByRole('group',{name:'Source folder selection'});
+ await folders.getByRole('checkbox',{name:'Lesson B',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Clear folders',exact:true}).click();
+ await folders.getByRole('checkbox',{name:'Lesson A',exact:true}).check();
+ await page.getByRole('button',{name:'Clear file types',exact:true}).click();
+ await page.getByRole('checkbox',{name:'.pdf',exact:true}).check();
+ await page.reload();await folders.getByRole('checkbox',{name:'Lesson A',exact:true}).waitFor();
+ assert.equal(await folders.getByRole('checkbox',{name:'Lesson A',exact:true}).isChecked(),true);
+ assert.equal(await folders.getByRole('checkbox',{name:'Lesson B',exact:true}).isChecked(),false);
+ assert.equal(await page.getByRole('checkbox',{name:'.txt',exact:true}).isChecked(),false);
+ await page.getByRole('textbox',{name:'Find file types',exact:true}).fill('.pdf');
+ assert.equal(await page.getByRole('group',{name:'File type selection',exact:true}).getByRole('checkbox').count(),1);
+ const pdf=page.getByRole('checkbox',{name:'.pdf',exact:true});await pdf.focus();await page.keyboard.press('Space');assert.equal(await pdf.isChecked(),false);await page.keyboard.press('Space');assert.equal(await pdf.isChecked(),true);
+ await page.getByRole('textbox',{name:'Find file types',exact:true}).fill('no-such-type');assert.equal(await page.getByText('No matching file types.',{exact:true}).count(),1);
+ await page.getByRole('textbox',{name:'Find file types',exact:true}).fill('');
+ await page.getByRole('textbox',{name:'Find source folders',exact:true}).fill('Lesson A');assert.equal(await folders.getByRole('checkbox').count(),2);
+ await page.getByRole('textbox',{name:'Find source folders',exact:true}).fill('');
+ await page.getByRole('checkbox',{name:'.pdf',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,'selection.png')});
+ await folders.scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,'folders.png')});
+ const require=createRequire(import.meta.url),axe=await fs.readFile(require.resolve('axe-core/axe.min.js'),'utf8');
+ await page.evaluate(code=>(0,eval)(code),axe);
+ const accessibility=await page.evaluate(()=>window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));
+ assert.deepEqual(accessibility.violations.map(v=>({id:v.id,impact:v.impact})),[]);
+ await fs.writeFile(path.join(out,'accessibility.json'),JSON.stringify(accessibility,null,2));
+ if (process.platform === 'darwin') {
+  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1560,900));
+  await page.waitForFunction(()=>innerWidth >= 1500);
+  const widths=await page.evaluate(()=>({
+   canvas:document.querySelector('#main-content').clientWidth,
+   workspace:document.querySelector('.tidy-page').getBoundingClientRect().width
+  }));
+  assert.ok(Math.abs(widths.workspace-widths.canvas)<2,'Workspace must fill the wide window');
+ }
+ await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(1280,960));
+ await page.locator('.tidy-source-choices').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,'tidy-light.png')});
+ await page.emulateMedia({colorScheme:'dark'});await page.waitForFunction(()=>document.documentElement.classList.contains('dark'));
+ const darkAccessibility=await page.evaluate(()=>window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}));assert.deepEqual(darkAccessibility.violations.map(v=>v.id),[]);
+ await page.screenshot({path:path.join(out,'tidy-dark.png')});
+ await page.emulateMedia({forcedColors:'active'});await page.screenshot({path:path.join(out,'tidy-contrast.png')});await page.emulateMedia({forcedColors:'none',colorScheme:'light'});
+ await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(2));
+ await page.waitForFunction(()=>innerWidth < 700);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ assert.equal(await page.locator('.tidy-selection-panel').evaluateAll(panels=>panels.every(panel=>panel.getBoundingClientRect().right<=innerWidth)),true);
+ await page.locator('.tidy-selection-panel').first().evaluate(element=>{ document.querySelector('#main-content').style.scrollBehavior='auto';element.scrollIntoView({block:'start',behavior:'instant'});document.querySelector('#main-content').scrollTop-=64; });
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const zoomCapture=await app.evaluate(async({BrowserWindow})=>(await BrowserWindow.getAllWindows()[0].capturePage()).toDataURL());await fs.writeFile(path.join(out,'tidy-zoom.png'),Buffer.from(zoomCapture.split(',')[1],'base64'));
+ await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(1));
+ await fs.writeFile(path.join(out,'accessibility-dark.json'),JSON.stringify(darkAccessibility,null,2));
+ const dialog=page.getByRole('dialog',{name:'Preview Changes',exact:true});
+ await page.getByRole('button',{name:'Run Tidy',exact:true}).click();await dialog.waitFor();
+ assert.equal(await dialog.getByText('worksheet.pdf',{exact:true}).count(),1);
+ assert.equal(await dialog.getByText('Lesson A',{exact:true}).count(),1);
+ assert.equal(await dialog.getByText('notes.txt',{exact:true}).count(),0);
+ await page.screenshot({path:path.join(out,'preview.png')});
+ await page.getByRole('button',{name:'Confirm & Run',exact:true}).click();await page.getByRole('heading',{name:'Tidy Complete!',exact:true}).waitFor();
+ for(const file of ['root.pdf','Lesson B/worksheet.pdf','Lesson A/notes.txt','Lesson A/Deep/deep.pdf'])assert.ok(await fs.readFile(path.join(source,file),'utf8'));
+ await assert.rejects(()=>fs.access(path.join(source,'Lesson A/worksheet.pdf')));
+ await page.getByRole('button',{name:'Undo Changes',exact:true}).click();await page.getByRole('heading',{name:'Undo Complete',exact:true}).waitFor();
+ assert.equal(await fs.readFile(path.join(source,'Lesson A/worksheet.pdf'),'utf8'),'a');await page.reload();
+ await page.getByRole('button',{name:'Clear folders',exact:true}).click();await page.getByRole('button',{name:'Run Tidy',exact:true}).click();await dialog.waitFor();assert.equal(await page.getByRole('button',{name:'Confirm & Run',exact:true}).isDisabled(),true);await page.keyboard.press('Escape');
+ await folders.getByRole('checkbox',{name:'Lesson A › Deep',exact:true}).check();
+ await page.getByRole('button',{name:'Run Tidy',exact:true}).click();await dialog.waitFor();assert.equal(await dialog.getByText('deep.pdf',{exact:true}).count(),1);await page.keyboard.press('Escape');
+ await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setSize(800,600));
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await folders.getByRole('checkbox',{name:'Lesson A › Deep',exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,'minimum-window.png')});
+ await page.getByRole('button',{name:'Clear file types',exact:true}).click();
+ await page.getByRole('switch',{name:'Include subfolders',exact:true}).uncheck();
+ assert.equal(await page.locator('.tidy-source-choices').count(),0);
+ await page.getByRole('button',{name:'Run Tidy',exact:true}).click();await dialog.waitFor();
+ assert.equal(await dialog.getByText('root.pdf',{exact:true}).count(),1);assert.equal(await dialog.getByText('root.txt',{exact:true}).count(),1);
+ assert.equal(await dialog.getByText('deep.pdf',{exact:true}).count(),0);await page.keyboard.press('Escape');
+ await page.reload();assert.equal(await page.locator('.tidy-source-choices').count(),0);
+ await page.getByRole('switch',{name:'Include subfolders',exact:true}).check();await folders.getByRole('checkbox',{name:'Lesson A › Deep',exact:true}).waitFor();
+ assert.equal(await folders.getByRole('checkbox',{name:'Lesson A › Deep',exact:true}).isChecked(),true);
+ assert.equal(await page.getByRole('checkbox',{name:'.pdf',exact:true}).isChecked(),false);
+ await page.getByRole('switch',{name:'Include subfolders',exact:true}).uncheck();
+ await page.screenshot({path:path.join(out,'subfolders-off.png')});
+ assert.deepEqual(errors,[]);
+ await fs.writeFile(path.join(out,executablePath?'packaged-results.json':'results.json'),JSON.stringify({packaged:!!executablePath,executablePath,passed:true,fixtures:root,checks:['Subfolder controls hide when off, including after restart; hidden filters do not affect root files; selections return when re-enabled','Search filters preserve selection; keyboard Space toggles checkboxes','Light/dark automatic accessibility checks pass; contrast and 200% layout inspected','Folder and PDF selections persist after restart','Preview and move select only Lesson A PDFs','Root, sibling, deeper PDFs and TXT stay put','Undo restores exact origin','Empty selection disables confirmation','Deep folder can be selected without its parent','800x600 fits without page errors']},null,2));
+ console.log('PASS source folder/file type choices, persistence, preview, moves, Undo, empty selection and minimum window');
+} finally {await app.close()}
