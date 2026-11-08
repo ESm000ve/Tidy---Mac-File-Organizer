@@ -40,6 +40,10 @@ Scheduling puts run frequency, folder watching, and conflict handling in one pla
 
 All five screenshots show the app in dark mode. The file preview uses synthetic files and redacted paths. The clarification uses a simulated AI response.
 
+## Build a system around the workflow
+
+The macOS Figma system carries over the Windows library’s progression from foundations and controls to workflow patterns and accessibility. It uses SF Pro, Light and Dark variables, and reusable components for the organizer. The [design system notes](design-system.md) connect those design decisions to the app and show where the Figma proposal and implementation differ.
+
 ## Verify behavior where mistakes matter
 
 I built regression checks around file conflicts, duplicate handling, exact restoration during Undo, and the risk of two runs moving the same files. Desktop checks cover the preview, keyboard focus, rule review, and key settings. The technical setup and commands are in the [project README](../README.md#develop-and-verify).

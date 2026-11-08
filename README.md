@@ -4,7 +4,7 @@ Tidy is a desktop file organizer for people who repeatedly sort downloads, scans
 
 **Eric Auzenne · Solo product design and development · Apple silicon**
 
-[Read the product design case study](docs/case-study.md) · [Run Tidy locally](#get-started)
+[Read the product design case study](docs/case-study.md) · [Explore the macOS design system](docs/design-system.md) · [Run Tidy locally](#get-started)
 
 ![Tidy’s workspace with source and destination pickers, filters, and rules](docs/screenshots/organize.png)
 
